@@ -1,0 +1,33 @@
+body {
+  margin: 0px;
+  padding: 0px;
+  font-family: "맑은 고딕";
+  font-size: 1em;
+  background: linear-gradient(to bottom, skyblue, white 50%);
+  background-attachment: fixed;
+}
+
+#container {
+  width: 960px;
+  margin: 0 auto;
+  background-color: #fff;
+  border: 1px solid #ccc;
+}
+
+#mainHeader {
+  height: 280px;
+  margin-top: 0px;
+  background-image: url(../images/11.jpg);
+}
+
+#mainHeader h1 {
+  position: absolute;
+  margin-top: 40px;
+  margin-left: 20px;
+}
+
+.header1 a {
+  color: #ff0;
+  font-size: 2em;
+  text-shadow: 1px 2px 1px #000;
+}

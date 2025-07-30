@@ -9,7 +9,6 @@
   <script>
     'use strict';
 
-
     /*
       /[~~~]/플러그인
   [^] : []안의 내용에 대한 부정...
@@ -41,11 +40,11 @@
       const regMid = /^[a-zA-Z0-9_]{3,20}$/g;   // 아이디는 영문 '대/소'문자, 숫자, '_'만 포함하여 3글자 이상~20글자 이하
       const regPwd = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*+-/_=])[A-Za-z\d!@#$%^&*+-/_=]{8,20}$/g; // 비밀번호는 '대/소'문자, 숫자, 특수문자 1글자를 포함해야한다.
       const regNickname = /^[a-zA-Z가-힣0-9_-]{3,15}$/g;    // 닉네임은 영문자나 한글, 숫자, _, -,가 올 수 있다.
-      const regName = /^[a-zA-Z가-힣]{2,20}$/g;        // 성명은 영문 또는 한글만 올 수 있다.
+      const regName = /^[a-zA-Z가-힣]{2,20}$/g;             // 성명은 영문 또는 한글만 올 수 있다.
       const regEmail = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/g;       // 이메일 형식에 맞도록 처리
       const regHomepage = /^(https?:\/\/)?([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}([/\\?#].*)?$/g;    // url 형식에 맞도록 처리
-      const regTel = /^\d{2,3}-\d{3,4}-\d{4}$/g;         //02-123-1234, 010-123-1234, 010-1234-1234
-      const regJumin = /^\d{6}-\d{7}$/g;       // 123456-1234567
+      const regTel = /^\d{2,3}-\d{3,4}-\d{4}$/g;           //02-123-1234, 010-123-1234, 010-1234-1234
+      const regJumin = /^\d{6}-\d{7}$/g;                   // 123456-1234567
 
     
     // 값이 일치하지 않을 경우 alert 출력하고 해당 위치로 커서 이동
@@ -85,7 +84,7 @@
       return false;
     }
 
-    if(homepage.value !== "" && !regHomepage.test(homepage.value)) {
+    if(!regHomepage.test(homepage.value)) {
       alert("홈페이지 주소 형식이 올바르지 않습니다.");
       homepage.focus();
       return false;
@@ -144,7 +143,7 @@
     </div>
     <div class="input-group mb-3">
       <div class="input-group-text">홈페이지</div>
-      <input type="text" name="homepage" id="mhomepageid" value="blog.naver.com/hkd1234" class="form-control" />
+      <input type="text" name="homepage" id="mhomepageid" value="blog.naver.com/hkd1234" class="form-control" required />
     </div>
     <div class="input-group mb-3">
       <div class="input-group-text">전화번호</div>
@@ -160,7 +159,7 @@
     </div>
     <div class="input-group mb-3">
       <div class="input-group-text">자기소개서</div>
-      <textarea rows="4" name="content" id="content" class="form-control" required>자기소개를 입력하세요.</textarea>
+      <textarea rows="4" name="content" id="content" class="form-control" required></textarea>
     </div>
     <div class="row">
       <div class="col"></div>

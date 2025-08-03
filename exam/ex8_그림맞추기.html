@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>t01.html</title>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+  'use strict';
+
+// HTML 문서가 모두 로딩되면 실행
+$(function() {
+  let intervalId = null; // 슬롯 회전 타이머 ID
+
+  // 페이지 로딩 시 '멈춤' 버튼은 비활성화
+  $('#stop').prop('disabled', true);
+
+  // '돌리기' 버튼 클릭 이벤트
+  $('#start').on('click', function() {
+    // 1. 배팅 금액 확인
+    const betMoney = Number($('#betMoney').val());
+    if (betMoney <= 0) {
+      alert("배팅 금액을 1 이상 입력해주세요.");
+      $('#betMoney').focus();
+      return;
+    }
+
+    // 2. 이전 결과 메시지 삭제 및 버튼 상태 변경
+    $('#result').html('');
+    $('#start').prop('disabled', true);
+    $('#stop').prop('disabled', false);
+
+    // 3. 0.1초마다 3개 슬롯의 이미지를 무작위로 변경
+    intervalId = setInterval(() => {
+      $('.slot-img').each(function() {
+        const randomNum = Math.floor(Math.random() * 6) + 1; // 1~6 사이의 무작위 숫자
+        $(this).attr('src', `../images/${randomNum}.gif`);
+      });
+    }, 100);
+  });
+
+  // '멈춤' 버튼 클릭 이벤트
+  $('#stop').on('click', function() {
+    // 1. 슬롯 회전 타이머 중지
+    clearInterval(intervalId);
+
+    // 2. 버튼 상태 변경
+    $('#stop').prop('disabled', true);
+    $('#start').prop('disabled', false); // 다시 돌릴 수 있도록 '시작' 버튼 활성화
+
+    // 3. 결과 판정 함수 호출
+    checkResult();
+  });
+
+  // 결과 판정 함수
+  function checkResult() {
+    const finalResults = []; // 최종 3개 슬롯의 숫자 저장 배열
+
+    // 각 슬롯의 최종 이미지 숫자 추출
+    $('.slot-img').each(function() {
+      const src = $(this).attr('src');
+      const num = parseInt(src.match(/(\d+)\.gif/)[1]);
+      finalResults.push(num);
+    });
+
+    const betMoney = Number($('#betMoney').val());
+    let message = '';
+
+    if (finalResults[0] === finalResults[1] && finalResults[1] === finalResults[2]) {
+      const prize = betMoney * 10;
+      message = `🎉🎉 JACKPOT!! 🎉🎉<br>축하합니다! ${prize.toLocaleString()}원을 획득하셨습니다!`;
+    }
+    else if (finalResults[0] === finalResults[1] || finalResults[0] === finalResults[2] || finalResults[1] === finalResults[2]) {
+      const prize = betMoney * 2;
+      message = `👍 2개 일치! 👍<br>${prize.toLocaleString()}원을 획득하셨습니다.`;
+    }
+    else {
+      message = `😭 아쉽네요... 다음 기회에! 😭`;
+    }
+    
+    $('#result').html(`<hr>${message}`);
+  }
+});
+
+  </script>
+  <style>
+    /* 간단한 스타일링 */
+    body {
+      padding: 2rem;
+      background-color: #f8f9fa;
+    }
+    .slot-machine {
+      background-color: #fff;
+      border: 5px solid #333;
+      border-radius: 15px;
+      padding: 1.5rem;
+      margin-top: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    .slot-img {
+      width: 100%;
+      height: 150px; /* 이미지 높이 고정 */
+      object-fit: contain; /* 이미지가 잘리지 않게 설정 */
+      border: 3px solid #dee2e6;
+      border-radius: 10px;
+    }
+    .palette-img {
+      width: 50px;
+      opacity: 0.7;
+    }
+    .controls {
+      margin-top: 1rem;
+    }
+  </style>
+  </head>
+<body>
+  <div class="container text-center">
+    <h3>🎰 슬롯머신 게임 🎰</h3>
+    <p>3개 슬롯의 그림을 맞춰보세요!</p>
+
+    <div class="mt-4">
+      <h6>(사용되는 이미지)</h6>
+      <div class="row justify-content-center g-2">
+        <div class="col-auto"><img src="../images/1.gif" class="palette-img"></div>
+        <div class="col-auto"><img src="../images/2.gif" class="palette-img"></div>
+        <div class="col-auto"><img src="../images/3.gif" class="palette-img"></div>
+        <div class="col-auto"><img src="../images/4.gif" class="palette-img"></div>
+        <div class="col-auto"><img src="../images/5.gif" class="palette-img"></div>
+        <div class="col-auto"><img src="../images/6.gif" class="palette-img"></div>
+      </div>
+    </div>
+
+    <div class="slot-machine row">
+      <div class="col-4"><img src="../images/1.gif" class="slot-img"></div>
+      <div class="col-4"><img src="../images/2.gif" class="slot-img"></div>
+      <div class="col-4"><img src="../images/3.gif" class="slot-img"></div>
+    </div>
+
+    <div class="input-group mb-3">
+      <span class="input-group-text">💰</span>
+      <input type="number" id="betMoney" class="form-control" placeholder="배팅 금액을 입력하세요">
+    </div>
+
+    <div class="controls d-grid gap-2 d-md-flex justify-content-md-center">
+      <button type="button" id="start" class="btn btn-success btn-lg">돌리기</button>
+      <button type="button" id="stop" class="btn btn-danger btn-lg">멈춤</button>
+      <button type="button" onclick="location.reload()" class="btn btn-primary btn-lg">다시하기</button>
+    </div>
+    
+    <div id="result" class="mt-4 fs-4 fw-bold"></div>
+  </div>
+</body>
+</html>

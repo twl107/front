@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>시계연습.html</title>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    'use strict'
+
+    let statusTime;
+    
+    function clock() {
+      let today = new Date();
+      let str1 = '';
+      let str2 = '';
+
+
+      // 날짜
+      let yy = String(today.getFullYear());
+      str1 += '<img src = "../images/' + yy.substring(0,1) + '.gif" />';
+      str1 += '<img src = "../images/' + yy.substring(1,2) + '.gif" />';
+      str1 += '<img src = "../images/' + yy.substring(2,3) + '.gif" />';
+      str1 += '<img src = "../images/' + yy.substring(3,4) + '.gif" />';
+      str1 += '년';
+
+      let MM = String(today.getMonth()+1).padStart(2, '0');
+      str1 += '<img src = "../images/' + MM.substring(0,1) + '.gif" />';
+      str1 += '<img src = "../images/' + MM.substring(1,2) + '.gif" />';
+      str1 += '월';
+
+      let dd = String(today.getDate()).padStart(2, '0');
+      str1 += '<img src = "../images/' + dd.substring(0,1) + '.gif" />';
+      str1 += '<img src = "../images/' + dd.substring(1,2) + '.gif" />';
+      str1 += '일';
+
+      // 시간
+      let hh = String(today.getHours()).padStart(2, '0');
+      str2 += '<img src = "../images/' + hh.substring(0,1) + '.gif" />';
+      str2 += '<img src = "../images/' + hh.substring(1) + '.gif" />';
+      str2 += " : "
+
+      let mm = String(today.getMinutes()).padStart(2, '0');
+      str2 += '<img src = "../images/' + mm.substring(0,1) + '.gif" />';
+      str2 += '<img src = "../images/' + mm.substring(1) + '.gif" />';
+      str2 += " : "
+
+      let ss = String(today.getSeconds()).padStart(2, '0');
+      str2 += '<img src = "../images/' + ss.substring(0,1) + '.gif" />';
+      str2 += '<img src = "../images/' + ss.substring(1) + '.gif" />';
+      str2 += " : "
+
+      let ms = String(today.getMilliseconds()).padStart(3, '0').substring(0, 2);
+      str2 += '<img src = "../images/' + ms.substring(0,1) + '.gif" />';
+      str2 += '<img src = "../images/' + ms.substring(1) + '.gif" />';
+
+      demo.innerHTML = str1 + '<br/><br/>' + str2;
+    }
+
+    function clockStart() {
+      statusTime = setInterval(clock, 0);
+    }
+
+    function clockStop() {
+      clearInterval(statusTime);
+    }
+
+  </script>
+</head>
+<body>
+<p><br/></p>
+<div class="container">
+  <h3>인터넷 시계</h3>
+  <p>
+    <input type="button" value="동작" onclick="clockStart()" class="btn btn-success" />
+    <input type="button" value="정지" onclick="clockStop()" class="btn btn-warning" />
+  </p>
+  <div id="demo"></div>
+</div>
+</body>
+</html>

@@ -9,6 +9,9 @@
   <script>
     'use strict';
 
+    let cartTotPrice = 0;
+    let cartTotEa = 0;
+
     // 가격계산(개별가격*수량)
     function priceCalc() {
       if(blankCheck()) {
@@ -86,13 +89,41 @@
       demo1.innerHTML = "";
       demo2.innerHTML = "";
       demo3.innerHTML = "";
-      demoCart.innerHTML = "";
     }
 
     // 콤마 변환함수(1,234)
     function numberWithCommas(num) {
-      return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g,",");
+      return num.toLocaleString('ko-KR');
     }
+
+    function cartSend() {
+      let product = myform.product.value;
+      let price = parseInt(myform.price.value);
+      let ea = parseInt(myform.ea.value);
+      let selectedOption = myform.price.options[myform.price.selectedIndex].text;
+
+      let totalPrice = (price * ea) * 1.1;
+
+      let str = `
+        <div>
+          <div> 제품명 : ${product} (${selectedOption})</div>
+          <div> 수량 : ${ea}개</div>
+          <div> 합계(VAT포함) : ${numberWithCommas(totalPrice)}원</div>
+        </div><hr/>
+      `;
+      
+      demoCart.innerHTML += str;
+      cartTotPrice += totalPrice;
+      cartTotEa += ea;
+      updateDemoPrice();
+      resetCheck();
+    }
+
+    function updateDemoPrice() {
+      demoPrice.innerHTML = `총 수량 : ${numberWithCommas(cartTotEa)}개<br/>
+      총계 : ${numberWithCommas(cartTotPrice)}원`;
+    }
+
   </script>
 </head>
 <body>
@@ -153,7 +184,9 @@
       </div>
     </div>
     <hr/>
-    <div id="demoCart"></div>
+    <h3 class="mt-2">장바구니 내역</h3>
+    <div class="mt-2 p-2 border" id="demoCart"></div>
+    <div class="mt-2 p-2 text-end" id="demoPrice"></div>
   </form>
 </div>
 </body>

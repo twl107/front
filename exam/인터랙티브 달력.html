@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>인터랙티브 달력 설명</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+        }
+        .calendar-table td {
+            transition: all 0.2s ease-in-out;
+        }
+        .today {
+            background-color: #fbbf24 !important; /* amber-400 */
+            color: #1f2937; /* gray-800 */
+            font-weight: bold;
+            border-radius: 50%;
+        }
+        .empty-cell {
+            background-color: #f3f4f6; /* gray-100 */
+        }
+        .highlight-code {
+            background-color: #fefce8; /* yellow-50 */
+            border-left: 4px solid #facc15; /* yellow-400 */
+            padding: 1rem;
+            border-radius: 0.25rem;
+            font-family: monospace;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 flex flex-col items-center justify-center min-h-screen p-4">
+
+    <div class="w-full max-w-2xl mx-auto bg-white p-6 rounded-xl shadow-lg">
+        <!-- 헤더: 월/년도 및 이전/다음 버튼 -->
+        <div class="flex justify-between items-center mb-4">
+            <button id="prevMonth" class="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded-lg transition-colors">&lt; 이전</button>
+            <h2 id="currentMonthYear" class="text-2xl font-bold text-gray-700"></h2>
+            <button id="nextMonth" class="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded-lg transition-colors">다음 &gt;</button>
+        </div>
+
+        <!-- 달력 테이블 -->
+        <table class="w-full calendar-table">
+            <thead>
+                <tr class="text-center font-medium text-gray-600">
+                    <th class="py-2 text-red-500">일</th>
+                    <th class="py-2">월</th>
+                    <th class="py-2">화</th>
+                    <th class="py-2">수</th>
+                    <th class="py-2">목</th>
+                    <th class="py-2">금</th>
+                    <th class="py-2 text-blue-500">토</th>
+                </tr>
+            </thead>
+            <tbody id="calendarBody" class="text-center">
+                <!-- 날짜가 여기에 동적으로 생성됩니다. -->
+            </tbody>
+        </table>
+        <div class="text-center mt-4">
+             <button id="goToday" class="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors">오늘로</button>
+        </div>
+    </div>
+
+    <!-- 코드 설명 섹션 -->
+    <div class="w-full max-w-2xl mx-auto bg-white p-6 rounded-xl shadow-lg mt-6">
+        <h3 class="text-xl font-bold mb-4 text-gray-800">코드와 달력의 연결고리 🔗</h3>
+        
+        <div class="mb-6">
+            <h4 class="font-semibold text-lg mb-2">1. 달의 시작 요일 찾기</h4>
+            <p class="mb-2 text-gray-600">이 코드는 <strong id="displayMonth1" class="text-blue-600"></strong>의 1일이 무슨 요일인지 계산합니다. 결과는 숫자로 나오며 0은 일요일, 6은 토요일을 의미합니다.</p>
+            <div class="highlight-code">let firstWeek = new Date(year, month-1, 1).getDay();</div>
+            <p class="mt-2 text-gray-700">👉 현재 달력에서 <strong id="displayFirstWeek" class="text-red-600"></strong> 입니다.</p>
+        </div>
+        
+        <div class="mb-6">
+            <h4 class="font-semibold text-lg mb-2">2. 달의 마지막 날짜 찾기</h4>
+            <p class="mb-2 text-gray-600">이 코드는 <strong id="displayMonth2" class="text-blue-600"></strong>의 마지막 날이 며칠인지 계산합니다. (윤년 자동 계산)</p>
+            <div class="highlight-code">let lastDate = new Date(year, month, 0).getDate();</div>
+            <p class="mt-2 text-gray-700">👉 현재 달력에서 <strong id="displayLastDate" class="text-red-600"></strong> 입니다.</p>
+        </div>
+
+        <div>
+            <h4 class="font-semibold text-lg mb-2">3. 첫 주 빈 칸 채우기 (핵심!)</h4>
+            <p class="mb-2 text-gray-600">이 코드가 바로 1일이 시작하기 전의 회색 빈 칸들을 만드는 부분입니다. 1일의 요일(<strong id="displayFirstWeek2" class="text-red-600"></strong>)만큼 반복하며 빈 칸(`<td>&nbsp;</td>`)을 채워 넣습니다.</p>
+            <div class="highlight-code">
+for(let j=1; j<=firstWeek; j++) {
+  str += '&lt;td class="empty-cell"&gt;&nbsp;&lt;/td&gt;';
+}
+            </div>
+            <p class="mt-2 text-gray-700">👉 현재 달력의 첫 주를 보면, 1일 앞에 <strong id="emptyCellCount" class="text-red-600"></strong>개의 회색 칸이 있는 것을 볼 수 있습니다. '이전', '다음' 버튼을 눌러 다른 달은 어떻게 변하는지 확인해보세요!</p>
+        </div>
+
+    </div>
+
+
+    <script>
+        // DOM 요소 가져오기
+        const currentMonthYearEl = document.getElementById('currentMonthYear');
+        const calendarBodyEl = document.getElementById('calendarBody');
+        const prevMonthBtn = document.getElementById('prevMonth');
+        const nextMonthBtn = document.getElementById('nextMonth');
+        const goTodayBtn = document.getElementById('goToday');
+
+        // 설명 섹션 요소
+        const displayMonth1 = document.getElementById('displayMonth1');
+        const displayMonth2 = document.getElementById('displayMonth2');
+        const displayFirstWeek = document.getElementById('displayFirstWeek');
+        const displayLastDate = document.getElementById('displayLastDate');
+        const displayFirstWeek2 = document.getElementById('displayFirstWeek2');
+        const emptyCellCount = document.getElementById('emptyCellCount');
+
+
+        // 현재 날짜 정보 저장
+        let currentDate = new Date();
+        let currentYear = currentDate.getFullYear();
+        let currentMonth = currentDate.getMonth() + 1; // 월은 0부터 시작하므로 +1
+
+        const weekDays = ['일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일'];
+
+        // 달력을 렌더링하는 함수
+        function renderCalendar(year, month) {
+            // --- 1. 달의 시작 요일 찾기 ---
+            // month-1: JavaScript의 월은 0부터 시작하기 때문
+            const firstWeek = new Date(year, month - 1, 1).getDay(); // 0:일, 1:월, ..., 6:토
+
+            // --- 2. 달의 마지막 날짜 찾기 ---
+            // month, 0: 다음 달의 0번째 날 = 이번 달의 마지막 날
+            const lastDate = new Date(year, month, 0).getDate();
+
+            // 오늘 날짜 정보
+            const today = new Date();
+            const todayYear = today.getFullYear();
+            const todayMonth = today.getMonth() + 1;
+            const todayDate = today.getDate();
+
+            // 헤더 업데이트
+            currentMonthYearEl.textContent = `${year}년 ${month}월`;
+            
+            // 달력 내용 초기화
+            calendarBodyEl.innerHTML = '';
+
+            let date = 1; // 시작 날짜
+            let calendarHTML = '<tr>'; // 달력 HTML 문자열
+
+            // --- 3. 첫 주 빈 칸 채우기 ---
+            // firstWeek 값만큼 반복하여 빈 칸(<td>)을 생성합니다.
+            // 예를 들어 1일이 금요일(firstWeek=5)이면, 5개의 빈 칸이 앞에 채워집니다.
+            for (let i = 0; i < firstWeek; i++) {
+                calendarHTML += '<td class="py-3 h-16 empty-cell">&nbsp;</td>';
+            }
+
+            // 날짜 채우기
+            while (date <= lastDate) {
+                const dayIndex = new Date(year, month - 1, date).getDay();
+                
+                // 오늘 날짜인지 확인
+                let todayClass = '';
+                if (year === todayYear && month === todayMonth && date === todayDate) {
+                    todayClass = ' today';
+                }
+
+                calendarHTML += `<td class="py-3 h-16 relative${todayClass}">${date}</td>`;
+                
+                // 토요일이면 줄바꿈(</tr><tr>)
+                if (dayIndex === 6 && date < lastDate) {
+                    calendarHTML += '</tr><tr>';
+                }
+                date++;
+            }
+
+            // 마지막 주 나머지 빈 칸 채우기
+            const lastDayIndex = new Date(year, month - 1, lastDate).getDay();
+            if (lastDayIndex !== 6) {
+                for (let i = lastDayIndex; i < 6; i++) {
+                    calendarHTML += '<td class="py-3 h-16 empty-cell">&nbsp;</td>';
+                }
+            }
+            
+            calendarHTML += '</tr>';
+            calendarBodyEl.innerHTML = calendarHTML;
+
+            // --- 설명 섹션 업데이트 ---
+            displayMonth1.textContent = `${year}년 ${month}월`;
+            displayMonth2.textContent = `${year}년 ${month}월`;
+            displayFirstWeek.textContent = `${firstWeek} (${weekDays[firstWeek]})`;
+            displayLastDate.textContent = `${lastDate}일`;
+            displayFirstWeek2.textContent = `${firstWeek} (${weekDays[firstWeek]})`;
+            emptyCellCount.textContent = `${firstWeek}`;
+        }
+
+        // 이전 달 버튼 이벤트
+        prevMonthBtn.addEventListener('click', () => {
+            currentMonth--;
+            if (currentMonth < 1) {
+                currentMonth = 12;
+                currentYear--;
+            }
+            renderCalendar(currentYear, currentMonth);
+        });
+
+        // 다음 달 버튼 이벤트
+        nextMonthBtn.addEventListener('click', () => {
+            currentMonth++;
+            if (currentMonth > 12) {
+                currentMonth = 1;
+                currentYear++;
+            }
+            renderCalendar(currentYear, currentMonth);
+        });
+        
+        // 오늘로 버튼 이벤트
+        goTodayBtn.addEventListener('click', () => {
+            const today = new Date();
+            currentYear = today.getFullYear();
+            currentMonth = today.getMonth() + 1;
+            renderCalendar(currentYear, currentMonth);
+        });
+
+        // 초기 달력 렌더링
+        renderCalendar(currentYear, currentMonth);
+    </script>
+</body>
+</html>
